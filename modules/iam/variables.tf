@@ -1,4 +1,9 @@
 variable "project_id" {
-  description = "GCP Project ID"
+  description = "Google Cloud Project ID"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment Name"
   type        = string
 }
