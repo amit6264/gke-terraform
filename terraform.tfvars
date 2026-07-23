@@ -20,6 +20,8 @@ repository_name = "shopping-repository"
 
 cluster_name = "shopping-gke"
 
+admin_cidr = "106.222.213.180/32"
+
 node_pool_name = "primary-pool"
 
 machine_type = "e2-standard-2"
