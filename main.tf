@@ -84,3 +84,35 @@ module "gke" {
 
   gke_service_account = module.iam.gke_node_sa_email
 }
+
+
+
+module "nodepool" {
+
+  source = "./modules/nodepool"
+
+  depends_on = [
+    module.gke
+  ]
+
+  project_id = var.project_id
+
+  region = var.region
+
+  cluster_name = module.gke.cluster_name
+
+  node_pool_name = var.node_pool_name
+
+  machine_type = var.machine_type
+
+  disk_size_gb = var.disk_size_gb
+
+  disk_type = var.disk_type
+
+  min_node_count = var.min_node_count
+
+  max_node_count = var.max_node_count
+
+  service_account = module.iam.gke_node_sa_email
+
+}
