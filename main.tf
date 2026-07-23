@@ -45,3 +45,18 @@ module "artifact_registry" {
 
   repository_name = var.repository_name
 }
+
+
+
+
+module "iam" {
+
+  source = "./modules/iam"
+
+  depends_on = [
+    module.apis
+  ]
+
+  project_id = var.project_id
+
+}
