@@ -92,7 +92,6 @@ module "gke" {
 
 }
 
-
 module "nodepool" {
 
   source = "./modules/nodepool"
@@ -107,18 +106,22 @@ module "nodepool" {
 
   cluster_name = module.gke.cluster_name
 
+  environment = var.environment
+
   node_pool_name = var.node_pool_name
 
   machine_type = var.machine_type
 
-  disk_size_gb = var.disk_size_gb
-
   disk_type = var.disk_type
+
+  disk_size_gb = var.disk_size_gb
 
   min_node_count = var.min_node_count
 
   max_node_count = var.max_node_count
 
-  service_account = module.iam.gke_node_sa_email
+  spot = var.spot
+
+  service_account = module.iam.gke_node_service_account_email
 
 }
