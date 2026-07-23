@@ -33,3 +33,7 @@ disk_type = "pd-balanced"
 min_node_count = 2
 
 max_node_count = 8
+
+disk_size_gb = 100
+
+spot = false
