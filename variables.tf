@@ -31,7 +31,9 @@ variable "cluster_name" {
   type = string
 }
 
-
+variable "admin_cidr" {
+  type = string
+}
 
 
 variable "node_pool_name" {
