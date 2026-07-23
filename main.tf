@@ -28,3 +28,20 @@ module "network" {
 
   services_cidr = var.services_cidr
 }
+
+
+
+module "artifact_registry" {
+
+  source = "./modules/artifact-registry"
+
+  depends_on = [
+    module.apis
+  ]
+
+  project_id = var.project_id
+
+  region = var.region
+
+  repository_name = var.repository_name
+}
