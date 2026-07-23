@@ -60,13 +60,6 @@ variable "max_node_count" {
   type = number
 }
 
-
-variable "disk_type" {
-  type = string
-}
-
-
 variable "spot" {
   type = bool
 }
-
