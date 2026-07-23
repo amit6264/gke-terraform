@@ -82,9 +82,15 @@ module "gke" {
 
   subnetwork = module.network.subnet_name
 
-  gke_service_account = module.iam.gke_node_sa_email
-}
+  pods_secondary_range_name = module.network.pods_secondary_range_name
 
+  services_secondary_range_name = module.network.services_secondary_range_name
+
+  environment = var.environment
+
+  admin_cidr = var.admin_cidr
+
+}
 
 
 module "nodepool" {
