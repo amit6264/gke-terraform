@@ -17,3 +17,5 @@ pods_cidr = "10.20.0.0/16"
 services_cidr = "10.30.0.0/20"
 
 repository_name = "shopping-repository"
+
+cluster_name = "shopping-gke"
