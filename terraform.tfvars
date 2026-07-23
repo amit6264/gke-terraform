@@ -19,3 +19,15 @@ services_cidr = "10.30.0.0/20"
 repository_name = "shopping-repository"
 
 cluster_name = "shopping-gke"
+
+node_pool_name = "primary-pool"
+
+machine_type = "e2-standard-2"
+
+disk_size_gb = 100
+
+disk_type = "pd-balanced"
+
+min_node_count = 2
+
+max_node_count = 8
