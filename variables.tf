@@ -20,3 +20,8 @@ variable "subnet_name" {}
 variable "subnet_cidr" {}
 variable "pods_cidr" {}
 variable "services_cidr" {}
+
+
+variable "repository_name" {
+  type = string
+}
