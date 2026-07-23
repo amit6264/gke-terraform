@@ -1,35 +1,54 @@
-resource "google_container_cluster" "gke" {
+#############################################################
+# GKE Cluster
+#############################################################
+
+resource "google_container_cluster" "this" {
 
   name     = var.cluster_name
   location = var.region
+  project  = var.project_id
+
+  ###########################################################
+  # Network
+  ###########################################################
 
   network    = var.network
   subnetwork = var.subnetwork
-
-  deletion_protection = false
-
-  remove_default_node_pool = true
-  initial_node_count       = 1
 
   networking_mode = "VPC_NATIVE"
 
   ip_allocation_policy {
 
-    cluster_secondary_range_name  = "pods"
-
-    services_secondary_range_name = "services"
+    cluster_secondary_range_name  = var.pods_secondary_range_name
+    services_secondary_range_name = var.services_secondary_range_name
 
   }
+
+  ###########################################################
+  # Private Cluster
+  ###########################################################
 
   private_cluster_config {
 
-    enable_private_nodes = true
+    enable_private_nodes    = var.enable_private_nodes
 
-    enable_private_endpoint = false
+    enable_private_endpoint = var.enable_private_endpoint
 
-    master_ipv4_cidr_block = "172.16.0.0/28"
+    master_ipv4_cidr_block = var.master_ipv4_cidr_block
 
   }
+
+  ###########################################################
+  # Remove Default Node Pool
+  ###########################################################
+
+  remove_default_node_pool = true
+
+  initial_node_count = 1
+
+  ###########################################################
+  # Workload Identity
+  ###########################################################
 
   workload_identity_config {
 
@@ -37,15 +56,25 @@ resource "google_container_cluster" "gke" {
 
   }
 
+  ###########################################################
+  # Release Channel
+  ###########################################################
+
   release_channel {
 
-    channel = "REGULAR"
+    channel = var.release_channel
 
   }
 
-  logging_service = "logging.googleapis.com/kubernetes"
+  ###########################################################
+  # Dataplane V2
+  ###########################################################
 
-  monitoring_service = "monitoring.googleapis.com/kubernetes"
+  datapath_provider = "ADVANCED_DATAPATH"
+
+  ###########################################################
+  # Network Policy
+  ###########################################################
 
   network_policy {
 
@@ -53,33 +82,124 @@ resource "google_container_cluster" "gke" {
 
   }
 
+  ###########################################################
+  # Vertical Pod Autoscaler
+  ###########################################################
+
   vertical_pod_autoscaling {
 
     enabled = true
 
   }
 
-  master_auth {
+  ###########################################################
+  # Logging
+  ###########################################################
 
-    client_certificate_config {
+  logging_config {
 
-      issue_client_certificate = false
+    enable_components = [
+
+      "SYSTEM_COMPONENTS",
+
+      "WORKLOADS"
+
+    ]
+
+  }
+
+  ###########################################################
+  # Monitoring
+  ###########################################################
+
+  monitoring_config {
+
+    enable_components = [
+
+      "SYSTEM_COMPONENTS",
+
+      "WORKLOADS"
+
+    ]
+
+  }
+
+  ###########################################################
+  # Cluster Addons
+  ###########################################################
+
+  addons_config {
+
+    http_load_balancing {
+
+      disabled = false
+
+    }
+
+    horizontal_pod_autoscaling {
+
+      disabled = false
+
+    }
+
+    dns_cache_config {
+
+      enabled = true
+
+    }
+
+    gce_persistent_disk_csi_driver_config {
+
+      enabled = true
 
     }
 
   }
 
-  node_config {
+  ###########################################################
+  # Maintenance Window
+  ###########################################################
 
-    service_account = var.gke_service_account
+  maintenance_policy {
 
-    shielded_instance_config {
+    recurring_window {
 
-      enable_secure_boot = true
+      start_time = "2026-01-01T${var.maintenance_start_time}:00Z"
 
-      enable_integrity_monitoring = true
+      end_time = "2026-01-01T05:00:00Z"
+
+      recurrence = "FREQ=WEEKLY;BYDAY=SU"
 
     }
 
   }
+
+  ###########################################################
+  # Authorized Networks
+  ###########################################################
+
+  master_authorized_networks_config {
+
+    cidr_blocks {
+
+      cidr_block = var.admin_cidr
+
+      display_name = "Admin"
+
+    }
+
+  }
+
+  ###########################################################
+  # Resource Labels
+  ###########################################################
+
+  resource_labels = local.common_labels
+
+  ###########################################################
+  # Security
+  ###########################################################
+
+  deletion_protection = var.deletion_protection
+
 }
