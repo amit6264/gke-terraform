@@ -13,3 +13,10 @@ variable "zone" {
 variable "environment" {
   type = string
 }
+
+
+variable "network_name" {}
+variable "subnet_name" {}
+variable "subnet_cidr" {}
+variable "pods_cidr" {}
+variable "services_cidr" {}
