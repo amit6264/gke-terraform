@@ -1,61 +1,37 @@
-resource "google_service_account" "gke_node_sa" {
-  account_id   = "gke-node-sa"
-  display_name = "GKE Node Service Account"
+resource "google_service_account" "gke_node" {
+
+  account_id   = local.service_accounts.gke_node.account_id
+
+  display_name = local.service_accounts.gke_node.display_name
+}
+
+resource "google_service_account" "github" {
+
+  account_id   = local.service_accounts.github.account_id
+
+  display_name = local.service_accounts.github.display_name
+}
+
+resource "google_service_account" "argocd" {
+
+  account_id   = local.service_accounts.argocd.account_id
+
+  display_name = local.service_accounts.argocd.display_name
 }
 
 
-resource "google_service_account" "github_actions_sa" {
-  account_id   = "github-actions-sa"
-  display_name = "GitHub Actions Service Account"
-}
+resource "google_project_iam_member" "gke_roles" {
 
-
-resource "google_service_account" "argocd_sa" {
-  account_id   = "argocd-sa"
-  display_name = "ArgoCD Service Account"
-}
-
-
-
-locals {
-  gke_node_roles = [
-    "roles/artifactregistry.reader",
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/stackdriver.resourceMetadata.writer"
-  ]
-}
-
-resource "google_project_iam_member" "gke_node_roles" {
-
-  for_each = toset(local.gke_node_roles)
+  for_each = toset(local.gke_roles)
 
   project = var.project_id
 
   role = each.value
 
-  member = "serviceAccount:${google_service_account.gke_node_sa.email}"
+  member = "serviceAccount:${google_service_account.gke_node.email}"
 }
 
 
-
-
-
-
-locals {
-
-  github_roles = [
-
-    "roles/artifactregistry.writer",
-
-    "roles/container.developer",
-
-    "roles/iam.serviceAccountUser"
-
-  ]
-
-}
 
 resource "google_project_iam_member" "github_roles" {
 
@@ -65,24 +41,10 @@ resource "google_project_iam_member" "github_roles" {
 
   role = each.value
 
-  member = "serviceAccount:${google_service_account.github_actions_sa.email}"
-
+  member = "serviceAccount:${google_service_account.github.email}"
 }
 
 
-
-
-locals {
-
-  argocd_roles = [
-
-    "roles/container.developer",
-
-    "roles/artifactregistry.reader"
-
-  ]
-
-}
 
 resource "google_project_iam_member" "argocd_roles" {
 
@@ -92,6 +54,19 @@ resource "google_project_iam_member" "argocd_roles" {
 
   role = each.value
 
-  member = "serviceAccount:${google_service_account.argocd_sa.email}"
+  member = "serviceAccount:${google_service_account.argocd.email}"
+}
 
+
+
+
+resource "google_service_account_iam_binding" "workload_identity" {
+
+  service_account_id = google_service_account.gke_node.name
+
+  role = "roles/iam.workloadIdentityUser"
+
+  members = [
+    "serviceAccount:${var.project_id}.svc.id.goog[default/default]"
+  ]
 }
