@@ -218,3 +218,14 @@ variable "oauth_scopes" {
   ]
 
 }
+
+
+node_tags = [
+  "gke-node"
+]
+
+node_labels = {
+  workload = "application"
+}
+
+node_taints = []
