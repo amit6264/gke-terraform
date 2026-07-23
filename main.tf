@@ -60,3 +60,27 @@ module "iam" {
   project_id = var.project_id
 
 }
+
+
+
+module "gke" {
+
+  source = "./modules/gke"
+
+  depends_on = [
+    module.network,
+    module.iam
+  ]
+
+  project_id = var.project_id
+
+  region = var.region
+
+  cluster_name = var.cluster_name
+
+  network = module.network.network_name
+
+  subnetwork = module.network.subnet_name
+
+  gke_service_account = module.iam.gke_node_sa_email
+}
